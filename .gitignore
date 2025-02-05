@@ -1,3 +1,5 @@
+.envrc
+
 # Binaries for programs and plugins
 *.exe
 *.exe~
@@ -13,3 +15,6 @@
 .vscode
 .idea
 vendor
+
+# Temp directory
+tmp/

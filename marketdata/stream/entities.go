@@ -6,6 +6,9 @@ import (
 	"github.com/alpacahq/alpaca-trade-api-go/v3/marketdata"
 )
 
+//go:generate go install github.com/mailru/easyjson/...@v0.7.7
+//go:generate easyjson -all -snake_case $GOFILE
+
 // Trade is a stock trade that happened on the market
 type Trade struct {
 	ID         int64
@@ -26,7 +29,7 @@ type tradeInternal struct {
 
 // Internal contains internal fields. There aren't any behavioural or backward compatibility
 // promises for them: they can be empty or removed in the future. You should not use them at all.
-func (t Trade) Internal() tradeInternal {
+func (t Trade) Internal() tradeInternal { //nolint:revive // We intentionally return an unexported struct here
 	return t.internal
 }
 
@@ -52,7 +55,7 @@ type quoteInternal struct {
 
 // Internal contains internal fields. There aren't any behavioural or backward compatibility
 // promises for them: they can be empty or removed in the future. You should not use them at all.
-func (q Quote) Internal() quoteInternal {
+func (q Quote) Internal() quoteInternal { //nolint:revive // We intentionally return an unexported struct here
 	return q.internal
 }
 
@@ -78,6 +81,14 @@ type TradingStatus struct {
 	ReasonMsg  string
 	Timestamp  time.Time
 	Tape       string
+}
+
+// Imbalance is an order imbalance message during LULD halts for a security
+type Imbalance struct {
+	Symbol    string
+	Price     float64
+	Timestamp time.Time
+	Tape      string
 }
 
 // LULD is a Limit Up Limit Down message
@@ -163,6 +174,29 @@ type CryptoOrderbookEntry struct {
 	Size  float64
 }
 
+// OptionTrade is an option trade that happened on the market
+type OptionTrade struct {
+	Symbol    string
+	Exchange  string
+	Price     float64
+	Size      uint32
+	Timestamp time.Time
+	Condition string
+}
+
+// OptionQuote is an option quote from the market
+type OptionQuote struct {
+	Symbol      string
+	BidExchange string
+	BidPrice    float64
+	BidSize     uint32
+	AskExchange string
+	AskPrice    float64
+	AskSize     uint32
+	Timestamp   time.Time
+	Condition   string
+}
+
 type News struct {
 	ID        int
 	Author    string
@@ -176,7 +210,7 @@ type News struct {
 }
 
 // errorMessage is an error received from the server
-type errorMessage struct {
+type errorMessage struct { //nolint:errname // Not an actual error.
 	msg  string
 	code int
 }
@@ -192,4 +226,15 @@ func (e errorMessage) Error() string {
 	}
 
 	return e.msg
+}
+
+type CryptoPerpPricing struct {
+	Symbol          string
+	Timestamp       time.Time
+	Exchange        string
+	IndexPrice      float64
+	MarkPrice       float64
+	FundingRate     float64
+	OpenInterest    float64
+	NextFundingTime time.Time
 }
